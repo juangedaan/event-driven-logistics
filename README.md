@@ -36,30 +36,38 @@ event-driven-logistics/
 │   ├── setup_dynamodb.py
 │   ├── docker-compose.yml
 │   └── requirements.txt
-└── scripts/
-    └── generate_mock_events.py
+├── scripts/
+│   └── generate_mock_events.py
+├── main.py
+└── Makefile
 ```
 
 ## How to Run
 
 1. **Set up Kafka and DynamoDB**:
-   - Use the provided `docker-compose.yml` to spin up local Kafka and DynamoDB services.
-
-2. **Install dependencies**:
    ```bash
-   pip install -r deployment/requirements.txt
+   make run-localstack
    ```
 
-3. **Start the services**:
-   - Start Kafka producers (`producer.py`) to simulate shipment events.
-   - Start the consumer (`consumer.py`) to process incoming events.
-   - Start the notifier (`notifier.py`) to send updates.
-   - Launch the dashboard (`dashboard/app.py`) to visualize the shipment status.
-
-4. **(Optional)** Generate mock events:
+2. **Create the table**:
    ```bash
-   python scripts/generate_mock_events.py
+   make create-table
    ```
+
+3. **Run the platform**:
+   ```bash
+   make start-consumer
+   make start-producer
+   make start-dashboard
+   ```
+
+4. **Or launch everything together**:
+   ```bash
+   python3 main.py
+   ```
+
+5. **View dashboard**:
+   - Open: [http://localhost:5000](http://localhost:5000)
 
 ## Key Technologies
 
@@ -68,3 +76,14 @@ event-driven-logistics/
 - Amazon DynamoDB (state storage)
 - Flask (dashboard web app)
 
+---
+
+## Screenshots
+
+### 🧪 Terminal — Producer + Consumer Output
+
+![Producer & Consumer Screenshot](screenshot.png)
+
+### 📊 Real-Time Shipment Dashboard
+
+![Dashboard Screenshot](dashboard.png)
