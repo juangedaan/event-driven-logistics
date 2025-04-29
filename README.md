@@ -136,12 +136,6 @@ You will see a live dashboard updating with shipment statuses.
 
 ## 📸 Screenshots
 
-### 📐 System Architecture
-
-![Architecture Diagram](architecture-diagram.png)
-
----
-
 ### 🧪 Terminal: Event Producer and Consumer in Action
 
 Real-time processing of shipment events flowing through Kafka into DynamoDB:
