@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shipment Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>📦 Real-Time Shipment Dashboard</h1>
+    <table>
+        <tr>
+            <th>Shipment ID</th>
+            <th>Status</th>
+            <th>Location</th>
+            <th>Timestamp</th>
+        </tr>
+        {% for shipment in shipments %}
+        <tr>
+            <td>{{ shipment.shipment_id }}</td>
+            <td>{{ shipment.status }}</td>
+            <td>{{ shipment.location }}</td>
+            <td>{{ shipment.timestamp }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+

@@ -1,0 +1,42 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Logs and temp
+*.log
+*.tmp
+
+# Environment
+.env
+venv/
+env/
+*.sqlite3
+
+# IDE/editor configs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker artifacts
+deployment/*.pid
+deployment/*.sock
+
+# Tmux logs
+tmux-session.log
+
+# Images/screenshots
+*.png
+
+# AWS credentials (just in case)
+*.pem
+*.crt
+*.key
+.aws/
+
+# Python test cache
+.pytest_cache/
+
