@@ -28,9 +28,6 @@ deployment/*.sock
 # Tmux logs
 tmux-session.log
 
-# Images/screenshots
-*.png
-
 # AWS credentials (just in case)
 *.pem
 *.crt
