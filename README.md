@@ -1,21 +1,30 @@
 # Event-Driven Logistics Tracking Platform
 
-Designed a real-time logistics event processing system (#SupplyChainTechnology, #EventDrivenArchitecture) to track shipments, warehouse movements, and customer notifications. Built using Kafka, Python, and DynamoDB to ensure high-throughput, low-latency operations across multiple geographies.
+This project implements a real-time event-driven logistics tracking platform leveraging **Kafka**, **Python**, **DynamoDB**, and **Flask**.  
+It enables merchants to monitor shipments, warehouse movements, and receive customer notifications across multiple geographies with minimal latency.
 
-Delivered a merchant-facing dashboard to provide real-time shipment visibility, enhancing platform reliability and operational transparency.
+Built around an **event-driven architecture** (#SupplyChainTechnology, #EventDrivenArchitecture), the system is designed for **high-throughput**, **low-latency** operations and transparent, real-time merchant-facing dashboards.
 
-## Architecture Overview
+---
+
+## 📈 Architecture Overview
+
+The system processes shipment events through the following components:
 
 - **Event Source**: Producers emit shipment and warehouse events into Kafka topics.
-- **Kafka Broker**: Manages event streaming and distribution.
-- **Consumer Service**: Listens to events, processes data, and writes into DynamoDB.
-- **DynamoDB**: Stores shipment and warehouse state information.
-- **Notifier Service**: Sends real-time updates to customers.
-- **Dashboard**: Flask app allowing merchants to view shipment status.
+- **Kafka Broker**: Handles event streaming and distribution.
+- **Consumer Service**: Processes events and writes shipment updates to DynamoDB.
+- **DynamoDB**: Stores real-time shipment and warehouse states.
+- **Notifier Service**: Sends real-time customer notifications.
+- **Dashboard**: Flask-based merchant dashboard for shipment visibility.
+
+<br>
 
 ![Architecture Diagram](architecture-diagram.png)
 
-## Project Structure
+---
+
+## 🗂️ Project Structure
 
 ```
 event-driven-logistics/
@@ -39,51 +48,126 @@ event-driven-logistics/
 ├── scripts/
 │   └── generate_mock_events.py
 ├── main.py
-└── Makefile
+├── Makefile
+└── run-tmux.sh
 ```
-
-## How to Run
-
-1. **Set up Kafka and DynamoDB**:
-   ```bash
-   make run-localstack
-   ```
-
-2. **Create the table**:
-   ```bash
-   make create-table
-   ```
-
-3. **Run the platform**:
-   ```bash
-   make start-consumer
-   make start-producer
-   make start-dashboard
-   ```
-
-4. **Or launch everything together**:
-   ```bash
-   python3 main.py
-   ```
-
-5. **View dashboard**:
-   - Open: [http://localhost:5000](http://localhost:5000)
-
-## Key Technologies
-
-- Apache Kafka (event streaming)
-- Python (event processing and dashboard)
-- Amazon DynamoDB (state storage)
-- Flask (dashboard web app)
 
 ---
 
-## Screenshots
+## 🚀 How to Run
 
-### 🧪 Terminal — Producer + Consumer Output
+### 1. Prerequisites
+- Python 3.7+
+- Docker
+- Docker Compose
+- Tmux
+
+Install Python libraries:
+
+```bash
+pip3 install -r deployment/requirements.txt
+```
+
+---
+
+### 2. Start Local Services
+
+Spin up **Kafka**, **Zookeeper**, and **DynamoDB Local**:
+
+```bash
+docker-compose -f deployment/docker-compose.yml up -d
+```
+
+Create the **DynamoDB Shipments table**:
+
+```bash
+python3 deployment/setup_dynamodb.py
+```
+
+---
+
+### 3. Launch Platform using Tmux
+
+All components (consumer, producer, notifier, dashboard) can be launched automatically in isolated Tmux windows:
+
+```bash
+TMUX="" ./run-tmux.sh
+```
+
+This script will:
+- Start Docker containers
+- Launch consumer service
+- Launch producer service
+- Launch notifier
+- Launch Flask dashboard
+- Open a DynamoDB scanner window
+- Attach to a unified Tmux session (`logistics`)
+
+**💡** You can reattach to the Tmux session anytime:
+
+```bash
+tmux attach -t logistics
+```
+
+---
+
+### 4. Access the Dashboard
+
+Once everything is running, open:
+
+```
+http://localhost:5000
+```
+
+You will see a live dashboard updating with shipment statuses.
+
+---
+
+## 🛠️ Key Technologies
+
+- **Apache Kafka** (event streaming)
+- **Python 3** (services and dashboard)
+- **Amazon DynamoDB Local** (shipment state storage)
+- **Flask** (dashboard web app)
+- **Docker Compose** (local environment setup)
+- **Tmux** (multi-service orchestration)
+
+---
+
+## 📸 Screenshots
+
+### 📐 System Architecture
+
+![Architecture Diagram](architecture-diagram.png)
+
+---
+
+### 🧪 Terminal: Event Producer and Consumer in Action
+
+Real-time processing of shipment events flowing through Kafka into DynamoDB:
 
 ![Producer & Consumer Screenshot](screenshot.png)
 
-### 📊 Real-Time Shipment Dashboard
+---
+
+### 📊 Real-Time Merchant Dashboard
+
+Dynamic view of shipment tracking and status visibility for merchants:
 
 ![Dashboard Screenshot](dashboard.png)
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## ✨ Future Enhancements
+
+- Integrate Schema Registry for Kafka payload validation.
+- Add authentication to merchant dashboard.
+- Extend event source to external IoT device simulation.
+- Deploy scalable version on AWS Managed Kafka + DynamoDB Global Tables.
+
