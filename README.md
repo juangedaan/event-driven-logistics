@@ -1,6 +1,6 @@
 # Event-Driven Logistics Tracking Platform
 
-This repository contains a minimal event-driven logistics simulation. A producer emits shipment events into an in-memory queue and a consumer processes them.
+This repository contains a minimal event-driven logistics simulation. A producer emits shipment events (with randomized statuses) into an in-memory queue and a consumer processes them. The two run in separate threads to mimic an asynchronous event-driven architecture.
 
 ```mermaid
 flowchart LR
