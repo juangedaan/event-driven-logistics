@@ -1,15 +1,38 @@
 # Event-Driven Logistics Tracking Platform
 
-This repository contains a minimal event-driven logistics simulation. A producer emits shipment events (with randomized statuses) into an in-memory queue and a consumer processes them. The two run in separate threads to mimic an asynchronous event-driven architecture.
+This repository contains an advanced event-driven logistics simulation with multiple topics, persistence, error handling, and metrics. Producers emit shipment, inventory, and order events into topic-based queues, with consumers processing them asynchronously.
 
 ```mermaid
-flowchart LR
-    Producer[Event Producer]
-    subgraph Queue
-      Kafka[(In-memory Queue)]
-    end
-    Consumer[Event Consumer]
-    Producer --> Kafka --> Consumer
+flowchart TD
+    Producers[Event Producers] --> Bus[Event Bus]
+    Bus --> Topics[Topics: shipments/inventory/orders]
+    Topics --> Consumers[Event Consumers]
+
+    Producers --> ShipmentProducer[Shipment Producer]
+    Producers --> InventoryProducer[Inventory Producer]
+    Producers --> OrderProducer[Order Producer]
+
+    ShipmentProducer --> Bus
+    InventoryProducer --> Bus
+    OrderProducer --> Bus
+
+    Bus --> Persistence[Event Persistence]
+    Persistence --> Replay[Event Replay on Restart]
+
+    Topics --> ShipmentConsumer[Shipment Consumer]
+    Topics --> InventoryConsumer[Inventory Consumer]
+    Topics --> OrderConsumer[Order Consumer]
+
+    Consumers --> Metrics[Processing Metrics]
+    Metrics --> Processed[Events Processed]
+    Metrics --> Failed[Failed Events]
+    Metrics --> Retries[Retry Attempts]
+
+    ShipmentConsumer --> ErrorHandling[Error Handling & Retries]
+    InventoryConsumer --> ErrorHandling
+    OrderConsumer --> ErrorHandling
+
+    ErrorHandling --> DeadLetter[Dead Letter Queue]
 ```
 
 ---
@@ -20,7 +43,8 @@ flowchart LR
 event-driven-logistics/
 ├── README.md
 ├── requirements.txt
-└── main.py
+├── main.py  # Advanced event bus with topics, persistence, threading
+└── events.log  # Persisted events (created on run)
 ```
 
 ---
@@ -41,7 +65,17 @@ pip install -r requirements.txt
 python main.py
 ```
 
-The producer will enqueue a few events and the consumer will process and print them.
+Producers will generate events across multiple topics, consumers will process them with error handling and retries.
+
+---
+
+## 🏗️ Features
+
+- **Multi-Topic Queues**: Separate queues for shipments, inventory, orders
+- **Event Persistence**: Events logged to file for replay
+- **Error Handling**: Consumer failures with retry logic
+- **Metrics Tracking**: Processed, failed, and retry counts
+- **Threading**: Concurrent producers and consumers
 
 ---
 
