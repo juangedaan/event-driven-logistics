@@ -1,14 +1,32 @@
-import subprocess
+import time
+import queue
 
-def run(name, command):
-    print(f"\n[Launching] {name}")
-    subprocess.Popen(command, shell=True)
+# simple in-memory queue to simulate Kafka
+event_queue = queue.Queue()
+
+# producer pushes events
+
+def producer():
+    for i in range(1, 6):
+        event = {'shipment_id': i, 'status': 'in_transit'}
+        print(f"[Producer] emitting event: {event}")
+        event_queue.put(event)
+        time.sleep(0.5)
+
+# consumer processes events
+
+def consumer():
+    while True:
+        try:
+            event = event_queue.get(timeout=2)
+        except queue.Empty:
+            break
+        print(f"[Consumer] processing event: {event}")
+        event_queue.task_done()
 
 if __name__ == "__main__":
-    run("Consumer", "python3 -m app.consumer")
-    run("Producer", "python3 -m app.producer")
-    run("Notifier", "python3 -m app.notifier")
-    run("Dashboard", "python3 -m app.dashboard.app")
-
-    print("\n✅ All services launched. Visit http://localhost:5000 to view the dashboard.")
+    print("Starting event-driven logistics simulation...")
+    producer()
+    consumer()
+    print("Simulation complete.")
 
