@@ -2,6 +2,8 @@
 
 This repository contains an advanced event-driven logistics simulation with multiple topics, persistence, error handling, and metrics. Producers emit shipment, inventory, and order events into topic-based queues, with consumers processing them asynchronously.
 
+![Architecture Diagram](architecture-diagram.png)
+
 ```mermaid
 flowchart TD
     Producers[Event Producers] --> Bus[Event Bus]
