@@ -2,8 +2,6 @@
 
 This repository contains an advanced event-driven logistics simulation with multiple topics, persistence, error handling, and metrics. Producers emit shipment, inventory, and order events into topic-based queues, with consumers processing them asynchronously.
 
-![Architecture Diagram](architecture-diagram.png)
-
 ```mermaid
 flowchart TD
     Producers[Event Producers] --> Bus[Event Bus]
@@ -33,8 +31,6 @@ flowchart TD
     ShipmentConsumer --> ErrorHandling[Error Handling & Retries]
     InventoryConsumer --> ErrorHandling
     OrderConsumer --> ErrorHandling
-
-    ErrorHandling --> DeadLetter[Dead Letter Queue]
 ```
 
 ---
@@ -101,6 +97,10 @@ make start-dashboard   # Terminal 4: Flask dashboard at http://localhost:5000
 
 Optional: `python3 scripts/generate_mock_events.py` sends a burst of 100 mock
 events, and `./run-tmux.sh` launches all of the above in a tmux session.
+
+### Dashboard
+
+![Shipment Dashboard](dashboard.png)
 
 ---
 
