@@ -19,6 +19,7 @@ env/
 
 # OS files
 .DS_Store
+._*
 Thumbs.db
 
 # Docker artifacts

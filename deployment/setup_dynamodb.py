@@ -1,6 +1,28 @@
+import os
+import time
+
 import boto3
 
-dynamodb = boto3.resource('dynamodb', region_name="us-west-2", endpoint_url="http://localhost:8000")
+# Dummy credentials: DynamoDB Local accepts anything, no real AWS account needed.
+dynamodb = boto3.resource(
+    'dynamodb',
+    region_name="us-west-2",
+    endpoint_url=os.environ.get("DYNAMODB_ENDPOINT", "http://localhost:8000"),
+    aws_access_key_id="local",
+    aws_secret_access_key="local",
+)
+
+
+def wait_for_dynamodb(retries=30):
+    for attempt in range(retries):
+        try:
+            dynamodb.meta.client.list_tables()
+            return
+        except Exception:
+            print("Waiting for DynamoDB Local to be ready...")
+            time.sleep(2)
+    raise RuntimeError("DynamoDB Local not reachable. Is `make run-localstack` running?")
+
 
 def create_shipments_table():
     table_name = "Shipments"
@@ -33,6 +55,7 @@ def create_shipments_table():
     table.wait_until_exists()
     print(f"Table {table_name} is ready.")
 
-if __name__ == "__main__":
-    create_shipments_table()
 
+if __name__ == "__main__":
+    wait_for_dynamodb()
+    create_shipments_table()

@@ -45,8 +45,22 @@ flowchart TD
 event-driven-logistics/
 ├── README.md
 ├── requirements.txt
-├── main.py  # Advanced event bus with topics, persistence, threading
-└── events.log  # Persisted events (created on run)
+├── Makefile                     # Shortcuts for the full pipeline
+├── main.py                      # Standalone in-memory simulation (no external services)
+├── events.log                   # Persisted events (created on run)
+├── app/
+│   ├── producer.py              # Sends shipment events to Kafka
+│   ├── consumer.py              # Reads Kafka events, stores them in DynamoDB
+│   ├── notifier.py              # Polls DynamoDB, sends (mock) notifications
+│   └── dashboard/               # Flask dashboard reading from DynamoDB
+├── config/
+│   └── dynamodb_config.py       # DynamoDB Local connection helper
+├── deployment/
+│   ├── docker-compose.yml       # Kafka, Zookeeper, DynamoDB Local
+│   └── setup_dynamodb.py        # Creates the Shipments table
+├── scripts/
+│   └── generate_mock_events.py  # Burst of 100 mock events into Kafka
+└── run-tmux.sh                  # Launches the whole pipeline in tmux windows
 ```
 
 ---
@@ -61,13 +75,32 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-2. Run the main script:
+2. Run the standalone simulation:
 
 ```bash
 python main.py
 ```
 
 Producers will generate events across multiple topics, consumers will process them with error handling and retries.
+
+---
+
+## 🐳 Running the Full Pipeline (Kafka + DynamoDB + Dashboard)
+
+Everything runs locally — no real AWS account or credentials are needed
+(DynamoDB Local accepts dummy credentials, which the code sets for you).
+
+```bash
+make run-localstack    # Start Kafka, Zookeeper, and DynamoDB Local via Docker
+make create-table      # Create the Shipments table in DynamoDB Local
+make start-producer    # Terminal 1: emit shipment events into Kafka
+make start-consumer    # Terminal 2: consume events, store in DynamoDB
+make start-notifier    # Terminal 3: mock notifications on new shipments
+make start-dashboard   # Terminal 4: Flask dashboard at http://localhost:5000
+```
+
+Optional: `python3 scripts/generate_mock_events.py` sends a burst of 100 mock
+events, and `./run-tmux.sh` launches all of the above in a tmux session.
 
 ---
 

@@ -31,6 +31,7 @@ class EventBus:
         self.consumers = {}
         self.metrics = {"processed": 0, "failed": 0, "retries": 0}
         self.persistence_file = "events.log"
+        self.done = threading.Event()  # set when producers finish
 
     def publish(self, topic: str, event: Event):
         if topic in self.queues:
@@ -46,19 +47,27 @@ class EventBus:
         self.consumers[topic].append(consumer_func)
 
     def persist_event(self, event: Event):
+        record = asdict(event)
+        record["type"] = event.type.value  # Enum is not JSON serializable
         with open(self.persistence_file, "a") as f:
-            f.write(json.dumps(asdict(event)) + "\n")
+            f.write(json.dumps(record) + "\n")
 
     def load_events(self):
+        topic_for_type = {
+            EventType.SHIPMENT_UPDATE: "shipments",
+            EventType.INVENTORY_CHANGE: "inventory",
+            EventType.ORDER_PLACED: "orders",
+        }
         if os.path.exists(self.persistence_file):
             with open(self.persistence_file, "r") as f:
                 for line in f:
                     try:
                         data = json.loads(line.strip())
+                        data["type"] = EventType(data["type"])
                         event = Event(**data)
-                        self.queues["shipments"].put(event)  # Replay to shipments
-                    except:
-                        pass
+                        self.queues[topic_for_type[event.type]].put(event)
+                    except (ValueError, KeyError, TypeError):
+                        pass  # skip corrupt lines
 
     def process_topic(self, topic: str):
         while True:
@@ -81,7 +90,8 @@ class EventBus:
                     self.metrics["processed"] += 1
                     self.queues[topic].task_done()
             except queue.Empty:
-                break
+                if self.done.is_set():
+                    break
 
 def shipment_producer(bus: EventBus, count=10):
     statuses = ['in_transit', 'delayed', 'delivered', 'cancelled']
@@ -161,6 +171,7 @@ if __name__ == "__main__":
 
     for p in producers:
         p.join()
+    bus.done.set()  # let consumers drain remaining events, then exit
     for c in consumers:
         c.join()
 

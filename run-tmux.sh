@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT_DIR="/home/juanmb/Projects/git/event-driven-logistics"
+PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SESSION="logistics"
 
 tmux new-session -d -s $SESSION
@@ -21,7 +21,7 @@ tmux new-window -t $SESSION:4 -n 'DynamoDB'
 tmux send-keys -t $SESSION:4 "aws dynamodb scan --table-name Shipments --endpoint-url http://localhost:8000 --region us-west-2 --output table" C-m
 
 tmux new-window -t $SESSION:5 -n 'Docker'
-tmux send-keys -t $SESSION:5 "cd $PROJECT_DIR/deployment && docker-compose up" C-m
+tmux send-keys -t $SESSION:5 "cd $PROJECT_DIR/deployment && docker compose up" C-m
 
 tmux select-window -t $SESSION:0
 tmux attach -t $SESSION
